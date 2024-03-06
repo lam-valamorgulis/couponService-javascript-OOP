@@ -11,10 +11,11 @@ const server = http.createServer((_req, res) => {
 
 const course = new Course("Testing-smartdev", 5000);
 const service = new CouponService();
-const coupon = new Coupon("10PERCENT", null, 111);
+const coupon = new Coupon("10PERCENT", null, 11);
 service.addCoupon(coupon)
 
 console.log(service.applyCoupon(course, "10PERCENT"))
+console.log(service.coupons)
 
 
 const port = 3000

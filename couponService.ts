@@ -1,7 +1,6 @@
 import Course from "./models/course"
 import Coupon from "./models/coupon"
 
-
 class CouponService {
   coupons: Coupon[];
 
@@ -13,10 +12,15 @@ class CouponService {
     this.coupons.push(coupon);
   }
 
-  applyCoupon(course: Course, couponCode: string): { applied: boolean, reason?: string, finalPrice: number } {
+  applyCoupon(course: Course, couponCode: string): { applied: boolean, reason?: string, message?: string, finalPrice: number } {
     const coupon = this.findCouponByCode(couponCode);
     if (!coupon) {
-      return { applied: false, reason: "Coupon not found", finalPrice: course.price };
+      return {
+        applied: false,
+        reason: "Coupon not found",
+        message: `Can't apply coupon to this course`,
+        finalPrice: course.price,
+      };
     }
 
     let discountAmount: number;
@@ -26,15 +30,29 @@ class CouponService {
     } else if (coupon.discountPercentAmount !== null) {
       discountAmount = (coupon.discountPercentAmount / 100) * course.price;
     } else {
-      return { applied: false, reason: "Invalid coupon", finalPrice: course.price };
+      return {
+        applied: false,
+        reason: "Invalid coupon",
+        message: "Can't find valid coupon",
+        finalPrice: course.price
+      };
     }
 
     if (discountAmount >= course.price) {
-      return { applied: false, reason: "Coupon discount exceeds course price", finalPrice: 0 };
+      return {
+        applied: true,
+        reason: "Coupon discount exceeds course price",
+        message: `Successfully applied Coupon to course ${course.name}`,
+        finalPrice: 0
+      };
     }
 
     const finalPrice = course.price - discountAmount;
-    return { applied: true, finalPrice };
+    return {
+      applied: true,
+      finalPrice,
+      message: `Successfully applied Coupon to course ${course.name}`,
+    };
   }
 
   findCouponByCode(code: string): Coupon | undefined {
