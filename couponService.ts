@@ -14,6 +14,13 @@ class CouponService {
     this.coupons.push(coupon);
   }
 
+
+  // Single Responsibility Principle (SRP):
+  // - The findCouponByCode method is responsible for finding a coupon by its code.
+  findCouponByCode(code: string): Coupon | undefined {
+    return this.coupons.find(coupon => coupon.code === code);
+  }
+
   // Single Responsibility Principle (SRP):
   // - The applyCoupon method is responsible for applying a coupon to a course.
   // - It delegates the finding of the coupon to the findCouponByCode method and
@@ -56,12 +63,6 @@ class CouponService {
       finalPrice,
       message: `Successfully applied Coupon to course ${course.name}`,
     };
-  }
-
-  // Single Responsibility Principle (SRP):
-  // - The findCouponByCode method is responsible for finding a coupon by its code.
-  findCouponByCode(code: string): Coupon | undefined {
-    return this.coupons.find(coupon => coupon.code === code);
   }
 
   // Single Responsibility Principle (SRP):
