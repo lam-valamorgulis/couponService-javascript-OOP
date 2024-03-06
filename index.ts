@@ -6,7 +6,7 @@ import Coupon from "./models/coupon"
 
 const course = new Course("Testing-smartdev", 5000);
 const service = new CouponService();
-const coupon = new Coupon("10PERCENT", null, 11);
+const coupon = new Coupon("10PERCENT", null, 111);
 service.addCoupon(coupon)
 
 console.log(service.applyCoupon(course, "10PERCENT"))

@@ -28,12 +28,22 @@ class CouponService {
     if (coupon.discountPriceAmount !== null) {
       discountAmount = coupon.discountPriceAmount;
     } else if (coupon.discountPercentAmount !== null) {
-      discountAmount = (coupon.discountPercentAmount / 100) * course.price;
+      if (coupon.discountPercentAmount > 100) {
+        return {
+          applied: false,
+          reason: "Coupon discount percent must be less than 100",
+          message: "Invalid percent discount coupon",
+          finalPrice: course.price
+        }
+
+      } else {
+        discountAmount = (coupon.discountPercentAmount / 100) * course.price;
+      }
     } else {
       return {
         applied: false,
-        reason: "Invalid coupon",
-        message: "Can't find valid coupon",
+        reason: "Can't find valid coupon",
+        message: "Invalid coupon",
         finalPrice: course.price
       };
     }
