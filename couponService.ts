@@ -9,15 +9,16 @@ class CouponService {
   }
 
   // Single Responsibility Principle (SRP):
-  // - This method has a single responsibility: adding coupons to the list.
+  // - The addCoupon method is responsible for adding coupons to the coupons array.
   addCoupon(coupon: Coupon): void {
     this.coupons.push(coupon);
   }
 
-  // Open/Closed Principle (OCP):
-  // - The applyCoupon method is open for extension (e.g., by adding new types of coupons) but closed for modification.
-  // - It handles different types of coupons without needing modifications.
-  // - This method could be further extended to handle more types of discounts without modifying its core logic.
+  // Single Responsibility Principle (SRP):
+  // - The applyCoupon method is responsible for applying a coupon to a course.
+  // - It delegates the finding of the coupon to the findCouponByCode method and
+  //   the calculation of the discount amount to the calculateDiscountAmount method.
+  // - It returns a result object containing information about the application result.
   applyCoupon(course: Course, couponCode: string): { applied: boolean, reason?: string, message?: string, finalPrice: number } {
     const coupon = this.findCouponByCode(couponCode);
     if (!coupon) {
@@ -29,28 +30,12 @@ class CouponService {
       };
     }
 
-    let discountAmount: number;
+    const discountAmount = this.calculateDiscountAmount(course, coupon);
 
-    if (coupon.discountPriceAmount !== null) {
-      discountAmount = coupon.discountPriceAmount;
-    } else if (coupon.discountPercentAmount !== null) {
-      // Interface Segregation Principle (ISP):
-      // - This part could be extracted into a separate method for better separation of concerns.
-      // - But in this case, it's not necessary as the logic is concise.
-      if (coupon.discountPercentAmount > 100) {
-        return {
-          applied: false,
-          reason: "Coupon discount percent must be less than 100",
-          message: "Invalid percent discount coupon",
-          finalPrice: course.price
-        }
-      } else {
-        discountAmount = (coupon.discountPercentAmount / 100) * course.price;
-      }
-    } else {
+    if (discountAmount === null) {
       return {
         applied: false,
-        reason: "Can't find valid coupon",
+        reason: "Coupon percent discount less than 100",
         message: "Invalid coupon",
         finalPrice: course.price
       };
@@ -73,11 +58,26 @@ class CouponService {
     };
   }
 
-  // Interface Segregation Principle (ISP):
-  // - This method focuses solely on finding a coupon by code.
-  // - It doesn't handle any other unrelated functionality.
+  // Single Responsibility Principle (SRP):
+  // - The findCouponByCode method is responsible for finding a coupon by its code.
   findCouponByCode(code: string): Coupon | undefined {
     return this.coupons.find(coupon => coupon.code === code);
+  }
+
+  // Single Responsibility Principle (SRP):
+  // - The calculateDiscountAmount method is responsible for calculating the discount amount for a coupon and a course.
+  // - It returns the discount amount or null if the coupon is invalid.
+  private calculateDiscountAmount(course: Course, coupon: Coupon): number | null {
+    if (coupon.discountPriceAmount !== null) {
+      return coupon.discountPriceAmount;
+    } else if (coupon.discountPercentAmount !== null) {
+      if (coupon.discountPercentAmount > 100) {
+        return null;
+      } else {
+        return (coupon.discountPercentAmount / 100) * course.price;
+      }
+    }
+    return null;
   }
 }
 
